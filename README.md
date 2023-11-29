@@ -1,0 +1,1 @@
+WoW Addon that automatically invites people who whisper you based on a set term
