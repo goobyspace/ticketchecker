@@ -1,4 +1,4 @@
-## Interface: 120001
+## Interface: 120005
 ## Title: Ticket Checker
 ## Notes: Auto invite people to your raid
 ## Author: gooby.space
