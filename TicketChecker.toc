@@ -6,7 +6,7 @@
 ## SavedVariables: TicketCheckerVariableArray
 
 ## X-Curse-Project-ID: 1688604
-## X-Wago-ID: bGoMzq60
+## X-Wago-ID: 4N2kQa6L
 
 ## Category: Quality of Life
 ## IconTexture: Interface\ICONS\INV_Misc_Ticket_Tarot_Madness
