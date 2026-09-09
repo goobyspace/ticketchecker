@@ -53,6 +53,17 @@ local function varChecker()
             }
         };
     end
+
+    -- fill in defaults for settings added after a player's first install
+    if TicketCheckerVariableArray.friendsOnly == nil then
+        TicketCheckerVariableArray.friendsOnly = false;
+    end
+    if TicketCheckerVariableArray.exactMatch == nil then
+        TicketCheckerVariableArray.exactMatch = false;
+    end
+    if TicketCheckerVariableArray.autoAcceptRequests == nil then
+        TicketCheckerVariableArray.autoAcceptRequests = false;
+    end
 end
 
 local function debugMode(enabled)
@@ -78,7 +89,7 @@ function core:InitEventHandler(_, name)
     core:InitializeSettings();
     core:InitializeMinimap();
     core:InitializeEvents();
-    debugMode(true);
+    debugMode(false);
 end
 
 local events = CreateFrame("Frame")
