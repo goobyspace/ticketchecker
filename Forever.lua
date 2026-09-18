@@ -1,0 +1,3 @@
+local _, core = ...
+
+core.isForever = true;

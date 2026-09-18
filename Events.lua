@@ -19,17 +19,22 @@ end
 
 local function isBattleNetFriendByName(playerName)
     if not playerName or not (C_BattleNet and C_BattleNet.GetNumFriends) then return false end
+    print("heyyy")
 
     local normalizedName = string.lower(playerName)
     local numFriends = C_BattleNet.GetNumFriends();
     for i = 1, numFriends do
+        print("wahoo")
         local friendInfo = C_BattleNet.GetFriendAccountInfo(i);
         if friendInfo then
+            print("b")
             local gameAccount = friendInfo.gameAccountInfo;
             if gameAccount then
+                print("c")
                 local friendName = string.lower(gameAccount.characterName or "")
                 local friendRealm = string.lower(gameAccount.realmName or "")
                 if normalizedName == friendName then return true end
+                print(normalizedName)
                 if normalizedName == (friendName .. "-" .. friendRealm) then return true end
             end
         end
@@ -38,9 +43,13 @@ local function isBattleNetFriendByName(playerName)
 end
 
 local function isAllowedSender(guid, playerName)
+    print("Sup!!!!")
     if not TicketCheckerVariableArray["friendsOnly"] then return true end
+    print("gagagag")
     if guid and (C_FriendList.IsFriend(guid) or IsGuildMember(guid)) then return true end
+    print("aobasdfa")
     if playerName and isBattleNetFriendByName(playerName) then return true end
+    print("aoishfoaihsd")
     return false;
 end
 
@@ -58,10 +67,15 @@ local function handleEvents(_, event, ...)
             local gameAccount = friendAccount.gameAccountInfo;
             if not gameAccount or not gameAccount.characterName then return end;
             local name = gameAccount.characterName .. "-" .. gameAccount.realmName;
-            C_PartyInfo.InviteUnit(name);
+            if core.isForever then
+                C_PartyInfo.InviteUnit(gameAccount.characterName);
+            else
+                C_PartyInfo.InviteUnit(name);
+            end
         end
     elseif event == "CHAT_MSG_WHISPER" then
         local msg, playerName, _, _, _, _, _, _, _, _, _, guid = ...;
+        print("waaaaah")
         if hasanysecretvalues(msg, playerName) then return end;
         if not isAllowedSender(guid, playerName) then return end;
         local foundKeyword = findKeyword(msg);
