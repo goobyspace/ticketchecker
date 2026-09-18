@@ -17,10 +17,31 @@ local function findKeyword(message)
     return false;
 end
 
-local function isAllowedSender(guid)
+local function isBattleNetFriendByName(playerName)
+    if not playerName or not (C_BattleNet and C_BattleNet.GetNumFriends) then return false end
+
+    local normalizedName = string.lower(playerName)
+    local numFriends = C_BattleNet.GetNumFriends();
+    for i = 1, numFriends do
+        local friendInfo = C_BattleNet.GetFriendAccountInfo(i);
+        if friendInfo then
+            local gameAccount = friendInfo.gameAccountInfo;
+            if gameAccount then
+                local friendName = string.lower(gameAccount.characterName or "")
+                local friendRealm = string.lower(gameAccount.realmName or "")
+                if normalizedName == friendName then return true end
+                if normalizedName == (friendName .. "-" .. friendRealm) then return true end
+            end
+        end
+    end
+    return false;
+end
+
+local function isAllowedSender(guid, playerName)
     if not TicketCheckerVariableArray["friendsOnly"] then return true end
-    if not guid then return false end
-    return C_FriendList.IsFriend(guid) or IsGuildMember(guid);
+    if guid and (C_FriendList.IsFriend(guid) or IsGuildMember(guid)) then return true end
+    if playerName and isBattleNetFriendByName(playerName) then return true end
+    return false;
 end
 
 local function handleEvents(_, event, ...)
@@ -42,7 +63,7 @@ local function handleEvents(_, event, ...)
     elseif event == "CHAT_MSG_WHISPER" then
         local msg, playerName, _, _, _, _, _, _, _, _, _, guid = ...;
         if hasanysecretvalues(msg, playerName) then return end;
-        if not isAllowedSender(guid) then return end;
+        if not isAllowedSender(guid, playerName) then return end;
         local foundKeyword = findKeyword(msg);
         if foundKeyword then
             C_PartyInfo.InviteUnit(playerName);

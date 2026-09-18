@@ -64,6 +64,9 @@ local function varChecker()
     if TicketCheckerVariableArray.autoAcceptRequests == nil then
         TicketCheckerVariableArray.autoAcceptRequests = false;
     end
+    if TicketCheckerVariableArray.minimap == nil then
+        TicketCheckerVariableArray.minimap = { hide = false, show = true };
+    end
 end
 
 local function debugMode(enabled)
