@@ -10,46 +10,23 @@ local function findKeyword(message)
                 if word == lowerKeyword then return true end
             end
         else
-            -- plain-text search avoids treating keyword as a Lua pattern
             if string.find(filterText, lowerKeyword, 1, true) ~= nil then return true end
         end
     end
     return false;
 end
 
-local function isBattleNetFriendByName(playerName)
-    if not playerName or not (C_BattleNet and C_BattleNet.GetNumFriends) then return false end
-    print("heyyy")
+local function isBattleNetFriend(guid)
+    if not guid or not (C_BattleNet and C_BattleNet.GetAccountInfoByGUID) then return false end
 
-    local normalizedName = string.lower(playerName)
-    local numFriends = C_BattleNet.GetNumFriends();
-    for i = 1, numFriends do
-        print("wahoo")
-        local friendInfo = C_BattleNet.GetFriendAccountInfo(i);
-        if friendInfo then
-            print("b")
-            local gameAccount = friendInfo.gameAccountInfo;
-            if gameAccount then
-                print("c")
-                local friendName = string.lower(gameAccount.characterName or "")
-                local friendRealm = string.lower(gameAccount.realmName or "")
-                if normalizedName == friendName then return true end
-                print(normalizedName)
-                if normalizedName == (friendName .. "-" .. friendRealm) then return true end
-            end
-        end
-    end
-    return false;
+    local accountInfo = C_BattleNet.GetAccountInfoByGUID(guid);
+    return accountInfo ~= nil and accountInfo.isFriend;
 end
 
-local function isAllowedSender(guid, playerName)
-    print("Sup!!!!")
+local function isAllowedSender(guid)
     if not TicketCheckerVariableArray["friendsOnly"] then return true end
-    print("gagagag")
     if guid and (C_FriendList.IsFriend(guid) or IsGuildMember(guid)) then return true end
-    print("aobasdfa")
-    if playerName and isBattleNetFriendByName(playerName) then return true end
-    print("aoishfoaihsd")
+    if isBattleNetFriend(guid) then return true end
     return false;
 end
 
@@ -75,9 +52,8 @@ local function handleEvents(_, event, ...)
         end
     elseif event == "CHAT_MSG_WHISPER" then
         local msg, playerName, _, _, _, _, _, _, _, _, _, guid = ...;
-        print("waaaaah")
-        if hasanysecretvalues(msg, playerName) then return end;
-        if not isAllowedSender(guid, playerName) then return end;
+        if hasanysecretvalues(msg, playerName, guid) then return end;
+        if not isAllowedSender(guid) then return end;
         local foundKeyword = findKeyword(msg);
         if foundKeyword then
             C_PartyInfo.InviteUnit(playerName);
